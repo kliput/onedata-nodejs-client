@@ -1,0 +1,17 @@
+{
+  "editor.tabSize": 2,
+  "editor.rulers": [
+    90
+  ],
+  "files.trimTrailingWhitespace": true,
+  "files.insertFinalNewline": true,
+  "[javascript]": {
+    "editor.formatOnSave": true,
+    "editor.formatOnType": true,
+    "editor.formatOnPaste": true,
+    "editor.defaultFormatter": "HookyQR.beautify",
+  },
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+},
+}

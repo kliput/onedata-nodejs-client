@@ -1,0 +1,18 @@
+{
+  "name": "onedata-gui-dev",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "eslint": "8.56.0",
+    "eslint-plugin-jsdoc": "48.2.3",
+    "eslint-plugin-promise": "6.1.1",
+    "eslint-plugin-regex": "1.10.0"
+  },
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs"
+}
