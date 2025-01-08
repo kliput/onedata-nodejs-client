@@ -82,6 +82,22 @@ class Onezone {
     }
     return groupId;
   }
+
+  async createAutomationInventory(name) {
+    const resp = await this.client.fetch('POST', 'onezone/user/atm_inventories', {
+      name,
+    });
+    await Client.validateResponse(resp, 'create automation inventory');
+    const respLocation = resp.headers.get('location');
+    if (!respLocation) {
+      throw new Error('createAutomationInventory response has no location header');
+    }
+    const inventoryId = respLocation.match(/.*\/(.*)$/)?.[1];
+    if (!inventoryId) {
+      throw new Error(`createAutomationInventory location reponse no valid ID: ${respLocation}`);
+    }
+    return inventoryId;
+  }
 }
 
 module.exports = { Onezone };

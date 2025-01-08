@@ -98,6 +98,22 @@ async function createMultipleShares(oneprovider) {
   }
 }
 
+/**
+ * @param {Onezone} onezone
+ * @returns {Promise<Array>}
+ */
+async function createMultipleInventories(onezone) {
+  const prefixes = ['alpha-inv', 'beta-inv', 'gamma-inv'];
+  const promises = [];
+  for (const namePrefix of prefixes) {
+    for (let i = 1; i < 100; ++i) {
+      const name = `${namePrefix}-${String(i).padStart(4, '0')}`;
+      promises.push(onezone.createAutomationInventory(name));
+    }
+  }
+  return Promise.all(promises);
+}
+
 async function index() {
   const onezoneClient = new Client();
   onezoneClient.host = 'dev-onezone.default.svc.cluster.local';
@@ -105,20 +121,20 @@ async function index() {
   onezoneClient.password = 'password';
   const onezone = new Onezone(onezoneClient);
 
-  // await createMultipleSpaces(onezone);
-  // await createMultipleGroups(onezone);
-  // const tokens = await createMultipleTokens(onezone);
-  // const token = tokens[0];
+  // // await createMultipleSpaces(onezone);
+  // // await createMultipleGroups(onezone);
+  // // const tokens = await createMultipleTokens(onezone);
+  // // const token = tokens[0];
 
-  const oneproviderClient = new Client();
-  oneproviderClient.host = 'dev-oneprovider-krakow.default.svc.cluster.local';
-  oneproviderClient.token =
-    'MDAzM2xvY2F00aW9uIGRldi1vbmV6b25lLmRlZmF1bHQuc3ZjLmNsdXN00ZXIubG9jYWwKMDA2YmlkZW500aWZpZXIgMi9ubWQvdXNyLTI5YzU1M2Y4NjNlYjlhOGM4MjVlNmE5Y2Q00MmFlM2Y1Y2gxYzIwL2FjdC8xNWY2M2U4MTVkYTE1MDI3MjZmM2IyNjBkMmRhOThjOWNoMzEwMgowMDFhY2lkIHRpbWUgPCAyMDAwMDAwMDAwCjAwMmZzaWduYXR1cmUghpjDfEHZ019bx25JmpXXVQXZ2XtUXPQz71Ypeun8PJzIK';
+  // const oneproviderClient = new Client();
+  // oneproviderClient.host = 'dev-oneprovider-krakow.default.svc.cluster.local';
   // oneproviderClient.token =
-  //   'MDAzM2xvY2F00aW9uIGRldi1vbmV6b25lLmRlZmF1bHQuc3ZjLmNsdXN00ZXIubG9jYWwKMDA2YmlkZW500aWZpZXIgMi9ubWQvdXNyLTI5YzU1M2Y4NjNlYjlhOGM4MjVlNmE5Y2Q00MmFlM2Y1Y2gxYzIwL2FjdC9jY2Q5ZmJjMTJlMjA5ZTQ00YThiNjk3YTlkY2UwYjIxMWNoNGI3NAowMDFhY2lkIHRpbWUgPCAxNzY3NzcxOTQ1CjAwMmZzaWduYXR1cmUgXq2027Y2C0102NPeBJxhfaGUOMF3CbIF99VLPuc6yE9yygK';
-  const oneprovider = new Oneprovider(oneproviderClient);
+  //   'MDAzM2xvY2F00aW9uIGRldi1vbmV6b25lLmRlZmF1bHQuc3ZjLmNsdXN00ZXIubG9jYWwKMDA2YmlkZW500aWZpZXIgMi9ubWQvdXNyLTI5YzU1M2Y4NjNlYjlhOGM4MjVlNmE5Y2Q00MmFlM2Y1Y2gxYzIwL2FjdC8xNWY2M2U4MTVkYTE1MDI3MjZmM2IyNjBkMmRhOThjOWNoMzEwMgowMDFhY2lkIHRpbWUgPCAyMDAwMDAwMDAwCjAwMmZzaWduYXR1cmUghpjDfEHZ019bx25JmpXXVQXZ2XtUXPQz71Ypeun8PJzIK';
+  // const oneprovider = new Oneprovider(oneproviderClient);
 
-  await createMultipleShares(oneprovider);
+  // await createMultipleShares(oneprovider);
+
+  await createMultipleInventories(onezone);
 
   // await removeAllSpaces(onezoneClient);
 }
