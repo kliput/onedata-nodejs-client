@@ -94,9 +94,28 @@ class Onezone {
     }
     const inventoryId = respLocation.match(/.*\/(.*)$/)?.[1];
     if (!inventoryId) {
-      throw new Error(`createAutomationInventory location reponse no valid ID: ${respLocation}`);
+      throw new Error(`createAutomationInventory location reponse has no valid ID: ${respLocation}`);
     }
     return inventoryId;
+  }
+
+  async createHarvester(name, endpoint, backendType) {
+    const resp = await this.client.fetch('POST', 'onezone/user/harvesters', {
+      name,
+      harvestingBackendEndpoint: endpoint,
+      harvestingBackendType: backendType,
+    });
+    await Client.validateResponse(resp, 'create harvester');
+    const respLocation = resp.headers.get('location');
+    if (!respLocation) {
+      throw new Error('createHarvester response has no location header');
+    }
+    // FIXME: ujednolicić wyciąganie idka z location
+    const id = respLocation.match(/.*\/(.*)$/)?.[1];
+    if (!id) {
+      throw new Error(`createHarvester location reponse has no valid ID: ${respLocation}`);
+    }
+    return id;
   }
 }
 

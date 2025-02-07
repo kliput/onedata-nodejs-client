@@ -31,7 +31,7 @@ async function createMultipleGroups(onezone) {
   const prefixes = ['alpha', 'beta', 'gamma'];
   const promises = [];
   for (const namePrefix of prefixes) {
-    for (let i = 1; i < 100; ++i) {
+    for (let i = 0; i < 100; ++i) {
       const name = `${namePrefix}-${String(i).padStart(4, '0')}`;
       promises.push(onezone.createGroup(name));
     }
@@ -45,9 +45,6 @@ async function createMultipleGroups(onezone) {
  */
 async function removeAllSpaces(onezone) {
   for (const spaceId of await onezone.listSpaces()) {
-    if (spaceId === 'b3301bb7a35837f975ad046586bad2efch6aba') {
-      continue;
-    }
     onezone.removeSpace(spaceId);
   }
 }
@@ -79,11 +76,8 @@ async function createMultipleTokens(onezone, valid = true) {
  *
  * @param {Oneprovider} oneprovider
  */
-async function createMultipleShares(oneprovider) {
-  const rootFileId =
-    '000000000058F65E677569642373706163655F3534366265643365356163356636646465333234353536373436393537316136636835306533233534366265643365356163356636646465333234353536373436393537316136636835306533';
-
-  const prefixes = ['Andrzej', 'Barbara', 'Cecylia'];
+async function createMultipleShares(oneprovider, rootFileId) {
+  const prefixes = ['alpha-sh', 'beta-sh', 'gamma-sh'];
   const promises = [];
   for (const namePrefix of prefixes) {
     for (let i = 0; i < 50; ++i) {
@@ -106,7 +100,7 @@ async function createMultipleInventories(onezone) {
   const prefixes = ['alpha-inv', 'beta-inv', 'gamma-inv'];
   const promises = [];
   for (const namePrefix of prefixes) {
-    for (let i = 1; i < 100; ++i) {
+    for (let i = 0; i < 100; ++i) {
       const name = `${namePrefix}-${String(i).padStart(4, '0')}`;
       promises.push(onezone.createAutomationInventory(name));
     }
@@ -114,27 +108,69 @@ async function createMultipleInventories(onezone) {
   return Promise.all(promises);
 }
 
+/**
+ * @param {Onezone} onezone
+ * @returns {Promise<Array<string>>}
+ */
+async function createMultipleHarvesters(onezone) {
+  const endpoint = '172.17.0.2:9200';
+  const harvestingBackendType = 'elasticsearch_harvesting_backend';
+  const prefixes = ['alpha-hrv', 'beta-hrv', 'gamma-hrv'];
+  const promises = [];
+  for (const namePrefix of prefixes) {
+    for (let i = 0; i < 100; ++i) {
+      const name = `${namePrefix}-${String(i).padStart(4, '0')}`;
+      promises.push(onezone.createHarvester(name, endpoint, harvestingBackendType));
+    }
+  }
+  return Promise.all(promises);
+}
+
 async function index() {
-  const onezoneClient = new Client();
-  onezoneClient.host = 'dev-onezone.default.svc.cluster.local';
-  onezoneClient.username = 'joe';
-  onezoneClient.password = 'password';
-  const onezone = new Onezone(onezoneClient);
+  // // ---- Admin Onezone ----
 
-  // // await createMultipleSpaces(onezone);
-  // // await createMultipleGroups(onezone);
-  // // const tokens = await createMultipleTokens(onezone);
-  // // const token = tokens[0];
+  // const adminOnezoneClient = new Client();
+  // adminOnezoneClient.host = 'dev-onezone.default.svc.cluster.local';
+  // adminOnezoneClient.username = 'admin';
+  // adminOnezoneClient.password = 'password';
+  // const adminOnezone = new Onezone(adminOnezoneClient);
 
-  // const oneproviderClient = new Client();
-  // oneproviderClient.host = 'dev-oneprovider-krakow.default.svc.cluster.local';
-  // oneproviderClient.token =
-  //   'MDAzM2xvY2F00aW9uIGRldi1vbmV6b25lLmRlZmF1bHQuc3ZjLmNsdXN00ZXIubG9jYWwKMDA2YmlkZW500aWZpZXIgMi9ubWQvdXNyLTI5YzU1M2Y4NjNlYjlhOGM4MjVlNmE5Y2Q00MmFlM2Y1Y2gxYzIwL2FjdC8xNWY2M2U4MTVkYTE1MDI3MjZmM2IyNjBkMmRhOThjOWNoMzEwMgowMDFhY2lkIHRpbWUgPCAyMDAwMDAwMDAwCjAwMmZzaWduYXR1cmUghpjDfEHZ019bx25JmpXXVQXZ2XtUXPQz71Ypeun8PJzIK';
-  // const oneprovider = new Oneprovider(oneproviderClient);
+  // // You can start harvester using:
+  // // docker run -p 9200:9200 -p 9300:9300 -e "discovery.type=single-node" docker.elastic.co/elasticsearch/elasticsearch:7.5.2
+  // await createMultipleHarvesters(adminOnezone);
 
-  // await createMultipleShares(oneprovider);
+  // ---- Joe Onezone ----
 
-  await createMultipleInventories(onezone);
+  const joeOnezoneClient = new Client();
+  joeOnezoneClient.host = 'dev-onezone.default.svc.cluster.local';
+  joeOnezoneClient.username = 'joe';
+  joeOnezoneClient.password = 'password';
+  const joeOnezone = new Onezone(joeOnezoneClient);
+
+  await createMultipleSpaces(joeOnezone);
+  await createMultipleGroups(joeOnezone);
+  await createMultipleInventories(joeOnezone);
+  const tokens = await createMultipleTokens(joeOnezone);
+  const accessToken = tokens[0];
+
+  // // ---- Joe Oneprovider ----
+
+  // // TODO: get list of tokens and get first access token
+  // const accessToken =
+  //   'MDAzM2xvY2F00aW9uIGRldi1vbmV6b25lLmRlZmF1bHQuc3ZjLmNsdXN00ZXIubG9jYWwKMDA2YmlkZW500aWZpZXIgMi9ubWQvdXNyLWM1MjhjM2MwMjI3NDgwNDYxMmZiMWQ1NjE5YzE3NGMyY2hjNmZlL2FjdC85OGIyNWZkOTc4ZDc1NGU1OGI3YTdjNWJiMjMyODE00OWNoODJkMgowMDFhY2lkIHRpbWUgPCAxNzY4Mzc4MDU5CjAwMmZzaWduYXR1cmUgXavmkWGwoQ1xFP102s008U9fATEidIBrmQzeOpVXPLppgK';
+
+  const joeOneproviderClient = new Client();
+  joeOneproviderClient.host = 'dev-oneprovider-krakow.default.svc.cluster.local';
+  joeOneproviderClient.token = accessToken;
+  const joeOneprovider = new Oneprovider(joeOneproviderClient);
+
+  // // TODO: get rootDirId of krk-p-par-p
+  await createMultipleShares(
+    joeOneprovider,
+    '000000000058AADC677569642373706163655F6437653166353837323338666538646662643033316562366131623438393765636832613434236437653166353837323338666538646662643033316562366131623438393765636832613434'
+  );
+
+  // ---- Other/cleanup ----
 
   // await removeAllSpaces(onezoneClient);
 }

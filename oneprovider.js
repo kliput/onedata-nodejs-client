@@ -1,4 +1,4 @@
-// FIXME: support: https://onedata.org/training/rest-hands-on.html#8
+// TODO: Add spaces supporting: https://onedata.org/training/rest-hands-on.html#8
 
 const { Client } = require('./client');
 
